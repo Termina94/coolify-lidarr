@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  build:
+    context: .
+    dockerfile: Dockerfile
+  lidarr:
+    #image: ghcr.io/hotio/lidarr:pr-plugins
+    container_name: lidarr
+    environment:
+      - SERVICE_FQDN_LIDARR_8686
+      - _APP_URL=$SERVICE_FQDN_LIDARR
+      - PUID=1000
+      - PGID=1000
+      - 'TZ=${TZ:-America/Toronto}'
+    volumes:
+      - 'lidarr-config:/config'
+      - '/mnt/media/music:/music'
+      - '/mnt/downloads:/downloads'
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - '-f'
+        - 'http://localhost:8686/ping'
+      interval: 2s
+      timeout: 10s
+      retries: 15
+volumes:
+  lidarr-config: null
